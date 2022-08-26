@@ -7,14 +7,15 @@ from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus
 
 class AudioMonitor:
     def __init__(self):
-        self.last_audio = rospy.Time()
+        self.silence_after_sound= rospy.Duration(rospy.get_param("~silence_after_sound", 30.0))
+        self.last_audio = rospy.Time.now()  # avoid errors on startup for repeat duration
         self.pub = rospy.Publisher('robotsound', SoundRequest, queue_size= 1, tcp_nodelay= True)
 
         self.sub_diag = rospy.Subscriber('diagnostics_agg', DiagnosticArray, self.diag_cb, queue_size= 1)
 
     def send_sound(self, request):
         now = rospy.Time.now()
-        if now - self.last_audio > rospy.Duration(30.0):
+        if now > self.last_audio + self.silence_after_sound:
             self.pub.publish(request)
             self.last_audio = now
 
