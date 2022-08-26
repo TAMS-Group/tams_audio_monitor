@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+  <node pkg="tams_audio_monitor" type="audio_monitor.py" name="audio_monitor" />
+</launch>
